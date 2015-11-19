@@ -44,7 +44,7 @@ def configure
 
     recipe_eval do
       sentinel_name = current['name'] || current['port']
-      sentinel_name = "sentinel_#{sentinel_name}"
+      sentinel_name = current['sentinel_name'] || "sentinel_#{sentinel_name}"
       piddir = "#{base_piddir}/#{sentinel_name}"
 
       #Create the owner of the redis data directory
