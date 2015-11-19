@@ -38,15 +38,18 @@ end
 sentinel_instances.each do |current_sentinel|
   sentinel_name = current_sentinel['name']
   job_control   = node['redisio']['job_control']
+  sentinel_name = current_sentinel['name'] || current_sentinel['port']
+  sentinel_name = current_sentinel['sentinel_name'] || "sentinel_#{sentinel_name}"
+  service_name = "redis_#{sentinel_name}"
 
   if job_control == 'initd'
-  	service "redis_sentinel_#{sentinel_name}" do
+    service service_name do
       # don't supply start/stop/restart commands, Chef::Provider::Service::*
       # do a fine job on it's own, and support systemd correctly
       supports :start => true, :stop => true, :restart => true, :status => false
-  	end
+    end
   elsif job_control == 'upstart'
-    service "redis_sentinel_#{sentinel_name}" do
+    service service_name do
       provider Chef::Provider::Service::Upstart
       start_command "start redis_sentinel_#{sentinel_name}"
       stop_command "stop redis_sentinel_#{sentinel_name}"
